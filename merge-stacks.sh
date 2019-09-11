@@ -1,17 +1,10 @@
 #!/bin/bash
 
-if [ "$#" -lt 1 ]; then
-    echo "Syntax:merge-stacks.sh <temp_work_dir>"
-    echo "eg: merge-stacks.sh ~/mirrortemp"
-    exit 1
-fi
-
-WORKSPACE=$1
 GITHUB_APPSODY_STACKS="https://github.com/appsody/stacks.git"
-if [ -z $2 ]; then 
+if [ -z $TEST_MERGE_REPO ]; then 
     GITHUB_COLLECTIONS="https://github.com/kabanero-io/collections.git"
 else
-     GITHUB_COLLECTIONS=$2
+     GITHUB_COLLECTIONS=$TEST_MERGE_REPO
 fi
 BRANCH_COLLECTIONS_STAGING="staging_stacks_master"
 BRANCH_COLLECTIONS_STACKS="master"
@@ -43,17 +36,6 @@ then
    echo "git clone $GITHUB_COLLECTIONS failed, rc=$rc."
    exit $rc
 fi
-
-#echo "Checking whether $BRANCH_COLLECTIONS_STAGING exists in $GITHUB_COLLECTIONS repository"
-#git show-branch remotes/origin/update-from-appsody >/dev/null
-#rc=$?
-#if [ $rc -ne 0 ]
-#then
-#    echo "Branch $BRANCH_COLLECTIONS_STAGING doesnt exist so will checkout as new branch"
-#    checkoutOption="-B"
-#else
-#    checkoutOption=""
-#fi
 
 echo "Checking out $BRANCH_COLLECTIONS_STAGING from $GITHUB_COLLECTIONS repository"
 git checkout $BRANCH_COLLECTIONS_STAGING 2> /dev/null
