@@ -14,5 +14,5 @@ before_install:
     - sudo snap install hub --classic 
 
 script:
-  - ./merge_stacks.sh
+  - ./merge-stacks.sh
 
