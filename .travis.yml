@@ -11,7 +11,7 @@ branches:
   - update-from-appsody
 
 before_install:
-    - snap install hub --classic 
+    - sudo snap install hub --classic 
 
 script:
   - ./merge_stacks.sh
