@@ -63,6 +63,8 @@ then
    exit $rc
 fi
 
+set -e 
+
 echo "Merging branches"
 result=$(git merge --allow-unrelated-histories -m "Merge latest stacks level" FETCH_HEAD | tee /dev/tty)
 rc=$?
@@ -92,7 +94,7 @@ echo "Completed update process... git status:"
 git status
 
 echo "Creating pull request for latest changes"
-#hub pull-request -b $BRANCH_COLLECTIONS_STACKS -h $BRANCH_COLLECTIONS_STAGING -m "Merge of latest appsody/stacks master branch"
+hub pull-request -b $BRANCH_COLLECTIONS_STACKS -h $BRANCH_COLLECTIONS_STAGING -m "Merge of latest appsody/stacks master branch"
 rc=$?
 if [ $rc -ne 0 ]
 then
