@@ -63,8 +63,6 @@ then
    exit $rc
 fi
 
-set -e 
-
 echo "Merging branches"
 result=$(git merge --allow-unrelated-histories -m "Merge latest stacks level" FETCH_HEAD | tee /dev/tty)
 rc=$?
@@ -77,11 +75,13 @@ else
    if [[ $result = *"Already up to date"* ]]; then
       exit 0;
    fi
-fi
-
-# Belt and braces check to ensure we exit if we have a merge conflict
-if [[ $result = *"Automatic merge failed;"* ]]; then
-    exit 1;
+   # Belt and braces check to ensure we exit if we have a merge conflict
+   if [[ $result = *"Automatic merge failed;"* ]]; then
+       echo "***********************"
+       echo "****** !FAILURE! ******"
+       echo "***********************"
+       exit 1;
+   fi
 fi
 
 echo "Running 'git push origin $BRANCH_COLLECTIONS_STAGING --no-tags'"
@@ -92,9 +92,6 @@ then
    echo "Push failed, $rc."
    exit $rc
 fi
-
-echo "Removing the appsody/stacks directory"
-rm -fr ./stacks
 
 echo "Completed update process... git status:"
 git status
@@ -111,4 +108,3 @@ fi
 echo "**********************"
 echo "****** SUCCESS! ******"
 echo "**********************"
-
