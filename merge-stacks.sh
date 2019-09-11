@@ -68,6 +68,7 @@ set -e
 echo "Merging branches"
 result=$(git merge --allow-unrelated-histories -m "Merge latest stacks level" FETCH_HEAD | tee /dev/tty)
 rc=$?
+echo "Return code from merge is $rc."
 if [ $rc -ne 0 ]
 then
    echo "Merge from stacks mirror failed, $rc."
@@ -76,6 +77,11 @@ else
    if [[ $result = *"Already up to date"* ]]; then
       exit 0;
    fi
+fi
+
+# Belt and braces check to ensure we exit if we have a merge conflict
+if [[ $result = *"Automatic merge failed;"* ]]; then
+    exit 1;
 fi
 
 echo "Running 'git push origin $BRANCH_COLLECTIONS_STAGING --no-tags'"
