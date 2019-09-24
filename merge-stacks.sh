@@ -37,6 +37,9 @@ then
    exit $rc
 fi
 
+echo "Setting merge strategy to `ours`"
+git config merge.ours.driver true
+
 echo "Checking out $BRANCH_COLLECTIONS_STAGING from $GITHUB_COLLECTIONS repository"
 git checkout $BRANCH_COLLECTIONS_STAGING 2> /dev/null
 rc=$?

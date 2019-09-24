@@ -5,3 +5,8 @@
 **/.settings
 **/.project
 .*.swp
+/ci/assets
+/ci/package
+/ci/build
+/ci/release
+**/.*.md.html
