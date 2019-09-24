@@ -2,7 +2,7 @@
 
 GITHUB_APPSODY_STACKS="https://github.com/appsody/stacks.git"
 if [ -z $TEST_MERGE_REPO ]; then 
-    GITHUB_COLLECTIONS="https://github.com/kabanero-io/collections.git"
+    GITHUB_COLLECTIONS="https://${GITHUB_TOKEN}@github.com/kabanero-io/collections.git"
 else
      GITHUB_COLLECTIONS=$TEST_MERGE_REPO
 fi

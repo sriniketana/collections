@@ -10,3 +10,4 @@
 /ci/build
 /ci/release
 **/.*.md.html
+/stacks
