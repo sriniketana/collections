@@ -5,11 +5,11 @@ if [ ! -f ./pom.xml ]; then
   echo "Error: Could not find Maven pom.xml
 
   * The project directory (containing an .appsody-conf.yaml file) must contain a pom.xml file.
-  * On Windows and MacOS, the project directory should also be shared with Docker: 
+  * On Windows and MacOS, the project directory should also be shared with Docker:
     - Win: https://docs.docker.com/docker-for-windows/#shared-drives
     - Mac: https://docs.docker.com/docker-for-mac/#file-sharing
   "
-  exit 1   
+  exit 1
 fi
 
 # Get parent pom information (../pom.xml)
@@ -21,15 +21,40 @@ eval $(mvn -q -Dexec.executable=echo -Dexec.args="${args}" --non-recursive -f ..
 echo "Installing parent ${PARENT_GROUP_ID}:${PARENT_ARTIFACT_ID}:${PARENT_VERSION}"
 mvn install -Dmaven.repo.local=/mvn/repository -Denforcer.skip=true -f ../pom.xml
 
+# Get parent pom information
+a_groupId=$(xmlstarlet sel -T -N x="http://maven.apache.org/POM/4.0.0" -t -v "/x:project/x:groupId" /project/pom.xml)
+a_artifactId=$(xmlstarlet sel -T -N x="http://maven.apache.org/POM/4.0.0" -t -v "/x:project/x:artifactId" /project/pom.xml)
+a_version=$(xmlstarlet sel -T -N x="http://maven.apache.org/POM/4.0.0" -t -v "/x:project/x:version" /project/pom.xml)
+p_groupId=$(xmlstarlet sel -T -N x="http://maven.apache.org/POM/4.0.0" -t -v "/x:project/x:parent/x:groupId" pom.xml)
+p_artifactId=$(xmlstarlet sel -T -N x="http://maven.apache.org/POM/4.0.0" -t -v "/x:project/x:parent/x:artifactId" pom.xml)
+p_version_range=$(xmlstarlet sel -T -N x="http://maven.apache.org/POM/4.0.0" -t -v "/x:project/x:parent/x:version" pom.xml)
+
 # Check child pom for required parent project
-if ! grep -Gz "<parent>.*<groupId>${PARENT_GROUP_ID}</groupId>.*</parent>" pom.xml | grep -Gz "<parent>.*<artifactId>${PARENT_ARTIFACT_ID}</artifactId>.*</parent>" | grep -Gzq "<parent>.*<version>${PARENT_VERSION}</version>.*</parent>"
-then
-  echo "Project is missing required parent:
+if [ "${p_groupId}" != "${a_groupId}" ] || [ "${p_artifactId}" != "${a_artifactId}" ]; then
+  echo "Project pom.xml is missing the required parent:
   <parent>
-    <groupId>${PARENT_GROUP_ID}</groupId>
-    <artifactId>${PARENT_ARTIFACT_ID}</artifactId>
-    <version>${PARENT_VERSION}</version>
-  </parent>"
+    <groupId>${a_groupId}</groupId>
+    <artifactId>${a_artifactId}</artifactId>
+    <version>${a_range}</version>
+    <relativePath/>
+  </parent>
+  "
+exit 1
+fi
+
+# Check parent version
+if ! /project/util/check_version contains "$p_version_range" "$a_version";  then
+  echo "Version mismatch
+  The version of the appsody stack '${a_version}' does not match the
+  parent version specified in pom.xml '${p_version_range}'. Please update
+  the parent version in pom.xml, and test your changes.
+  <parent>
+    <groupId>${a_groupId}</groupId>
+    <artifactId>${a_artifactId}</artifactId>
+    <version>${a_range}</version>
+    <relativePath/>
+  </parent>
+  "
   exit 1
 fi
 
