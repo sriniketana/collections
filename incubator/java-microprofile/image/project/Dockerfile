@@ -27,10 +27,6 @@ RUN set -eux; \
 
 COPY . /project
 
-RUN  /project/util/check_version build
-
-WORKDIR /project/user-app
-
 # Maven install
 ARG MAVEN_VERSION=3.6.2
 ARG USER_HOME_DIR="/root"
@@ -46,6 +42,12 @@ ARG BASE_URL=https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/bina
 
 ENV MAVEN_HOME /usr/share/maven
 ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
+
+RUN  /project/util/check_version build
+
+RUN cd /project && mvn -B install dependency:go-offline -DskipTests
+
+WORKDIR /project/user-app
 
 RUN mvn install -DskipTests
 
