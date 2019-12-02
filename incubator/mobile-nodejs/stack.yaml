@@ -1,0 +1,10 @@
+name: Node.js Mobile BFF
+version: 0.2.8
+description: A Node.js BFF for Mobile apps
+license: Apache-2.0
+language: nodejs
+maintainers:
+  - name: Srihari Kulkarni
+    email: skulkarni@in.ibm.com
+    github-id: sriniketana
+default-template: simple
